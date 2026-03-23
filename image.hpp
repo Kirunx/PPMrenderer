@@ -1,3 +1,4 @@
+#pragma once
 #include <cstdint>
 #include <vector>
 #include <limits>
@@ -10,7 +11,7 @@ class Image {
 private:
 	// Буфер цвета каждого пикселя
     std::vector<Pixel> color_buffer;
-	// Буфер дальности пикселя от камеры 
+	// Буфер глубины пикселя  
 	std::vector<float> depth_buffer;
 	int width, height;
 public:

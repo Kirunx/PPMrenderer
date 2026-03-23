@@ -1,3 +1,4 @@
+#pragma once
 #include "mesh.hpp"
 
 class Rasterizer {
@@ -10,7 +11,7 @@ public:
     // Линия по Брезенхэму
     void draw_line(vec2 p0, vec2 p1, Pixel color);
 
-    void draw_triangle(Vertex v0, Vertex v1, Vertex v2);
+    void draw_triangle(Vertex v0, Vertex v1, Vertex v2, Pixel color);
 
 private:
     // Ищет Область внутри треугольника
