@@ -11,9 +11,11 @@ public:
     // Линия по Брезенхэму
     void draw_line(vec2 p0, vec2 p1, Pixel color);
 
-    void draw_triangle(Vertex v0, Vertex v1, Vertex v2, Pixel color);
+    void draw_triangle(Vertex v0, Vertex v1, Vertex v2);
 
 private:
     // Ищет Область внутри треугольника
     float edge_function(vec2 a, vec2 b, vec2 c);
+    void draw_lineH(vec2 p0, vec2 p1, Pixel color);
+    void draw_lineV(vec2 p0, vec2 p1, Pixel color);
 };
