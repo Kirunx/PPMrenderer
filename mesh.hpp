@@ -6,6 +6,10 @@
 struct Vertex {
     vec4 position; // (x, y, z, 1.0)
     Pixel color;   // (r, g, b)
+
+    vec2 get_2d_position(){
+        return {position.x,position.y};
+    }
 };
 
 struct Triangle {

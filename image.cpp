@@ -4,7 +4,7 @@ void Image::set_pixel(int x, int y, int z, Pixel color) {
     // Развертка координат в 1D массив
     int idx = (y * width) + x;
     // Проверка на наличие пикселя ближе к камере
-    if (z < depth_buffer[idx]) {
+    if (z <= depth_buffer[idx]) {
         depth_buffer[idx] = z;
         color_buffer[idx] = color;
     }
