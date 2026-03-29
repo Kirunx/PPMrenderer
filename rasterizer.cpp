@@ -1,5 +1,6 @@
 #include "rasterizer.hpp"
 #include <algorithm>
+#include <iostream>
 #include <math.h>
 #include <vector>
 // Возможно стоит добавить второй цвет для интерполяции и перегрузить функцию
@@ -77,10 +78,11 @@ void Rasterizer::draw_lineH(vec2 p0, vec2 p1, Pixel color, std::vector<Vertex>& 
         int p = 2 * dy - dx;
         for (int i = 0; i < dx + 1; ++i) {
             target.set_pixel(p0.x + i, y, 0, color);
-            v_stack.push_back({{p0.x + i, y,0,1},color}); //TODO: add z parameters handling
+
             if (p >= 0) {
                 y += dir;
                 p = p - 2 * dx;
+                v_stack.push_back({ { p0.x + i, y + 1, 0, 1 }, color }); // TODO: add z parameters handling
             }
             p = p + 2 * dy;
         }
@@ -103,7 +105,7 @@ void Rasterizer::draw_lineV(vec2 p0, vec2 p1, Pixel color, std::vector<Vertex>& 
         int p = 2 * dx - dy;
         for (int i = 0; i < dy + 1; ++i) {
             target.set_pixel(x, p0.y + i, 0, color);
-            v_stack.push_back({{x,p0.y + i,0,1},color}); //TODO: add z parameters handling
+            v_stack.push_back({ { x, p0.y + i, 0, 1 }, color }); // TODO: add z parameters handling
             if (p >= 0) {
                 x += dir;
                 p = p - 2 * dy;
@@ -123,14 +125,32 @@ bool Rasterizer::compare_by_y(const Vertex& a, const Vertex& b) {
     return a.position.y < b.position.y;
 }
 void Rasterizer::draw_triangle(Vertex v0, Vertex v1, Vertex v2) {
-    std::vector<Vertex> v_stack;
-    v_stack.push_back(v0);
-    v_stack.push_back(v1);
-    v_stack.push_back(v2);
-    std::sort(v_stack.begin(), v_stack.end(), compare_by_y);
-    this->draw_line(v_stack[0].get_2d_position(),v_stack[1].get_2d_position(),v_stack[0].color);
-    this->draw_line(v_stack[0].get_2d_position(),v_stack[2].get_2d_position(),v_stack[1].color);
+    this->v.push_back(v0);
+    this->v.push_back(v1);
+    this->v.push_back(v2);
+    std::sort(this->v.begin(), this->v.end(), compare_by_y);
+    this->draw_line(this->v[0].get_2d_position(), this->v[1].get_2d_position(), this->v[0].color, v_stack);
+    this->draw_line(this->v[0].get_2d_position(), this->v[2].get_2d_position(), this->v[1].color, v_stack);
+    this->draw_line(this->v[1].get_2d_position(), this->v[2].get_2d_position(), this->v[2].color, v_stack);
+    std::sort(this->v_stack.begin(), this->v_stack.end(), compare_by_y);
+
+    for (int i = 0; i < this->v_stack.size(); i += 2) {
+        this->draw_line_simple(this->v_stack[i].get_2d_position().x, this->v_stack[i + 1].get_2d_position().x, this->v_stack[i].get_2d_position().y, v0.color);
+    }
+    this->v.clear();
+    this->v_stack.clear();
 }
 void Rasterizer::draw_dot(vec2 v, Pixel color) {
     target.set_pixel(v.x, v.y, 0, color);
+}
+void Rasterizer::draw_line_simple(int x1, int x2, int y, Pixel color) {
+    if (x1 <= x2) {
+        for (int x = x1; x <= x2; ++x) {
+            target.set_pixel(x, y, 0, color);
+        }
+    } else {
+        for (int x = x2; x <= x1; ++x) {
+            target.set_pixel(x, y, 0, color);
+        }
+    }
 }

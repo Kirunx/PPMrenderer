@@ -16,8 +16,7 @@ public:
     void draw_triangle(Vertex v0, Vertex v1, Vertex v2);
 
 private:
-    // Ищет Область внутри треугольника
-    float edge_function(vec2 a, vec2 b, vec2 c);
+    std::vector<Vertex> v, v_stack;
     void draw_lineH(vec2 p0, vec2 p1, Pixel color);
     void draw_lineH(vec2 p0, vec2 p1, Pixel color,std::vector<Vertex> &v_stack);
     void draw_lineV(vec2 p0, vec2 p1, Pixel color);
@@ -25,4 +24,7 @@ private:
 
     // Helper функция для сортировки перед растеризации
     static bool compare_by_y(const Vertex& a, const Vertex& b);
+    // Функция для заполнения треугольника
+    void draw_line_simple(int x1, int x2, int y, Pixel color);
+
 };
