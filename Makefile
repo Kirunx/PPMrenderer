@@ -4,6 +4,16 @@ TARGET = ./build/PPMrndr
 SOURCES = $(wildcard *.cpp)
 HEADERS = $(wildcard *.hpp)
 
+CONVERT = ffmpeg
+INPUT = ./build/test.ppm
+
+TIMESTAMP = $(shell date +%Y%m%d_%H%M%S)
+OUTPUT = ./screenshots/screenshot_$(TIMESTAMP).png
+
+convert:
+	$(CONVERT) -y -i $(INPUT) -loglevel error $(OUTPUT)
+	@echo "Conversion complete: $(OUTPUT)"
+
 all: $(TARGET)
 
 $(TARGET): $(SOURCES) $(HEADERS)
