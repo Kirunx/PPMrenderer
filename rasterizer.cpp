@@ -1,6 +1,7 @@
 #include "rasterizer.hpp"
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <math.h>
 #include <vector>
 // Возможно стоит добавить второй цвет для интерполяции и перегрузить функцию
@@ -132,9 +133,9 @@ void Rasterizer::draw_triangle(Vertex v0, Vertex v1, Vertex v2) {
     this->v.push_back(v1);
     this->v.push_back(v2);
     std::sort(this->v.begin(), this->v.end(), compare_by_y);
-    this->draw_line(this->v[0], this->v[1], v_stack);
-    this->draw_line(this->v[0], this->v[2], v_stack);
-    this->draw_line(this->v[1], this->v[2], v_stack);
+    this->draw_line(this->v[0], this->v[1], this->v_stack);
+    this->draw_line(this->v[0], this->v[2], this->v_stack);
+    this->draw_line(this->v[1], this->v[2], this->v_stack);
     std::sort(this->v_stack.begin(), this->v_stack.end(), compare_by_y);
 
     for (size_t i = 0; i < v_stack.size();) {
@@ -169,10 +170,14 @@ void Rasterizer::draw_line_simple(int x1, float z1, int x2, float z2, int y, Pix
 
     float z = z1;
     float dz = (x2 != x1) ? (z2 - z1) / (x2 - x1) : 0;
-    uint8_t test_z_color = std::clamp((int)z, 0, 255);
-    Pixel z_color = { 255 - test_z_color, 0, 255 - test_z_color };
+
     for (int x = x1; x <= x2; ++x) {
+        // Тестовое заполнение цвета по глубине
+        uint8_t color_val = 255 - (uint8_t)std::clamp(z, 0.0f, 255.0f);
+        Pixel z_color = { color_val, color_val, color_val };
+
         target.set_pixel(x, y, z, z_color);
+
         z += dz;
     }
 }

@@ -5,7 +5,7 @@ SOURCES = $(wildcard *.cpp)
 HEADERS = $(wildcard *.hpp)
 
 CONVERT = ffmpeg
-INPUT = ./build/test.ppm
+INPUT = ./build/*.ppm
 
 TIMESTAMP = $(shell date +%Y%m%d_%H%M%S)
 OUTPUT = ./screenshots/screenshot_$(TIMESTAMP).png
