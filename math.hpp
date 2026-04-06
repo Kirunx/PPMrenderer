@@ -54,12 +54,45 @@ struct mat4 {
         res.m[2][2] = v.z;
         return res;
     }
-    static mat4 rotate_y(float angle_radians);
+    static mat4 rotate_x(float angle_radians) {
+        mat4 res;
+        float c = std::cos(angle_radians);
+        float s = std::sin(angle_radians);
 
+        res.m[1][1] = c;
+        res.m[1][2] = -s;
+        res.m[2][1] = s;
+        res.m[2][2] = c;
 
+        return res;
+    }
 
+    static mat4 rotate_y(float angle_radians) {
+        mat4 res;
+        float c = std::cos(angle_radians);
+        float s = std::sin(angle_radians);
+
+        res.m[0][0] = c;
+        res.m[0][2] = s; 
+        res.m[2][0] = -s;
+        res.m[2][2] = c;
+
+        return res;
+    }
+
+    static mat4 rotate_z(float angle_radians) {
+        mat4 res;
+        float c = std::cos(angle_radians);
+        float s = std::sin(angle_radians);
+
+        res.m[0][0] = c;
+        res.m[0][1] = -s;
+        res.m[1][0] = s;
+        res.m[1][1] = c;
+
+        return res;
+    }
 };
-
 
 inline mat4 operator*(const mat4& a, const mat4& b) {
     mat4 result;
@@ -113,7 +146,6 @@ inline vec4 operator-(const vec4& a, const vec4& b) {
 }
 inline vec4 operator/(const vec4& a, const vec4& b) { return vec4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w); }
 
-
 inline float dot(const vec4& a, const vec4& b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
@@ -131,27 +163,35 @@ inline vec4 cross(const vec4& a, const vec4& b) {
         0.0f);
 }
 // Позиция камеры , точка на которую она смотрит, где находиться вверх в пространстве
-inline mat4 look_at(vec4 eye, vec4 center, vec4 up) { 
-    vec4 f = normalize(center - eye); 
-    vec4 s = normalize(cross(f, up));  
-    vec4 u = cross(s, f);             
+inline mat4 look_at(vec4 eye, vec4 center, vec4 up) {
+    vec4 f = normalize(center - eye);
+    vec4 s = normalize(cross(f, up));
+    vec4 u = cross(s, f);
 
     mat4 res;
-    res.m[0][0] = s.x;  res.m[0][1] = s.y;  res.m[0][2] = s.z;
-    res.m[1][0] = u.x;  res.m[1][1] = u.y;  res.m[1][2] = u.z;
-    res.m[2][0] = -f.x; res.m[2][1] = -f.y; res.m[2][2] = -f.z;
+    res.m[0][0] = s.x;
+    res.m[0][1] = s.y;
+    res.m[0][2] = s.z;
+    res.m[1][0] = u.x;
+    res.m[1][1] = u.y;
+    res.m[1][2] = u.z;
+    res.m[2][0] = -f.x;
+    res.m[2][1] = -f.y;
+    res.m[2][2] = -f.z;
 
     res.m[0][3] = -dot(s, eye);
     res.m[1][3] = -dot(u, eye);
     res.m[2][3] = dot(f, eye);
-    
+
     return res;
 }
 // Угол обзора, соотношение сторон, клип поверхности
 inline mat4 perspective(float fov_y, float aspect, float near_z, float far_z) {
     float f = 1.0f / tanf(fov_y / 2.0f);
     mat4 res;
-    for(int i=0; i<4; ++i) for(int j=0; j<4; ++j) res.m[i][j] = 0;
+    for (int i = 0; i < 4; ++i)
+        for (int j = 0; j < 4; ++j)
+            res.m[i][j] = 0;
 
     res.m[0][0] = f / aspect;
     res.m[1][1] = f;
@@ -159,6 +199,6 @@ inline mat4 perspective(float fov_y, float aspect, float near_z, float far_z) {
     res.m[2][3] = (2.0f * far_z * near_z) / (near_z - far_z);
     res.m[3][2] = -1.0f;
     res.m[3][3] = 0.0f;
-    
+
     return res;
 }

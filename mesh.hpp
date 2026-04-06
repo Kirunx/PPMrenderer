@@ -20,6 +20,6 @@ class Mesh {
 public:
     std::vector<Triangle> triangles;
 
-    static Mesh create_cube(float size, Pixel color);
-    static Mesh create_sphere(float radius, int segments, Pixel color);
+    void create_cube(float size, Pixel color);
+    Mesh create_sphere(float radius, int segments, Pixel color);
 };
