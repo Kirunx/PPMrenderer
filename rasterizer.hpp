@@ -12,7 +12,7 @@ public:
     void draw_line(Vertex v0, Vertex v1);
 
     void draw_triangle(Vertex v0, Vertex v1, Vertex v2);
-
+    void draw_triangle_outline(Vertex v0, Vertex v1, Vertex v2);
 private:
     std::vector<Vertex> v, v_stack;
     void draw_lineH(Vertex v0, Vertex v1);

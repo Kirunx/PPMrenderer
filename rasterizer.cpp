@@ -131,3 +131,9 @@ void Rasterizer::fill_horizontal_line(int y, float x1, float z1, float x2, float
         z += dz;
     }
 }
+
+void Rasterizer::draw_triangle_outline(Vertex v0, Vertex v1, Vertex v2) {
+    draw_line(v0,v2);
+    draw_line(v0,v1);
+    draw_line(v1,v2);
+}

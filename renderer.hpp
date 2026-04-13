@@ -29,6 +29,6 @@ public:
     void set_camera(vec4 eye, vec4 center, vec4 up);
     void set_projection_perspective(float fov, float aspect, float near, float far);
     void set_projection_type(ProjType proj);
-    // The big one: processes the whole scene and draws it
+    
     void render_frame(Rasterizer& rasterizer);
 };

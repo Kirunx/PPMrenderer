@@ -13,11 +13,13 @@ int main() {
 
     Image img(WIDTH, HEIGHT);
     Rasterizer rstr(img);
-    img.clear({ 0, 0, 0 });
+    img.clear({ 255, 255, 255 });
     Mesh cube_mesh;
     cube_mesh.create_cube(0.5f, { 0, 0, 0 });
-    SceneObject cube = { cube_mesh, { { 0.0f, 0.0f, -1.3f, 1.0f }, { 20.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } } };
+    cube_mesh.tesselate(5);
+    SceneObject cube = { cube_mesh, { { 0.0f, 0.0f, 0.0f, 1.0f }, { 20.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f } } };
     Renderer rndr;
+    rndr.set_projection_type(ProjType::FISHEYE);
     rndr.set_camera({ 0.0f, 0.0f, 5.0f, 1.0f }, { 0, 0, 0, 1 }, { 0, 1, 0, 0 });
     rndr.set_projection_perspective(0.33f, (float)WIDTH / HEIGHT, 0.1f, 12.0f);
     rndr.add_object(cube);
@@ -31,6 +33,6 @@ int main() {
     std::cout << "------------------------------------" << std::endl;
     std::cout << "Render completed in: " << ms << " ms" << std::endl;
     std::cout << "------------------------------------" << std::endl;
-
+    std::cout << cube_mesh.indices.size()/3;
     return 0;
 }

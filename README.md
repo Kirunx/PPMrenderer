@@ -13,3 +13,6 @@ Study project to learn the basics of computer graphics without relying on any AP
 
 ## 14-04-2026
 Оптимизации и интерфейсы
+Тесселяция и "рыбий глаз"
+![tesselatino](./screenshots/screenshot_20260413_215133.png)
+![fish_eye](./screenshots/screenshot_20260413_231600.png)
