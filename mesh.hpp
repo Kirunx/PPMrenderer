@@ -18,8 +18,9 @@ struct Triangle {
 
 class Mesh {
 public:
-    std::vector<Triangle> triangles;
-
+    std::vector<Vertex> vertices;
+    std::vector<int> indices;
     void create_cube(float size, Pixel color);
     Mesh create_sphere(float radius, int segments, Pixel color);
 };
+

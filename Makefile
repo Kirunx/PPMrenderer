@@ -1,5 +1,5 @@
 CXX = g++
-CFLAGS = -std=c++17 -O2
+CFLAGS = -std=c++17 -O3
 TARGET = ./build/PPMrndr
 SOURCES = $(wildcard *.cpp)
 HEADERS = $(wildcard *.hpp)

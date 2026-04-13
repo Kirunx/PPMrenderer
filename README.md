@@ -10,3 +10,6 @@ Study project to learn the basics of computer graphics without relying on any AP
 ## 31-03-2026
 3-х точечная проекция и буфер глубины
 ![depth_cube](./screenshots/screenshot_20260330_223958.png)
+
+## 14-04-2026
+Оптимизации и интерфейсы

@@ -1,13 +1,13 @@
 #include "image.hpp"
 #include <algorithm>
 void Image::set_pixel(int x, int y, int z, Pixel color) {
-    if (x < 0 || x >= width || y < 0 || y >= height) {
-        return; 
-    }
+    // if (x < 0 || x >= width || y < 0 || y >= height) {
+    //     return; 
+    // }
     // Развертка координат в 1D массив
     int idx = (y * width) + x;
     // Проверка на наличие пикселя ближе к камере
-    if (z < depth_buffer[idx]) {
+    if (z <= depth_buffer[idx]) {
         depth_buffer[idx] = z;
         color_buffer[idx] = color;
     }

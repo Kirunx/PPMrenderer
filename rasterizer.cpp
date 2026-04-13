@@ -5,65 +5,7 @@
 #include <math.h>
 #include <vector>
 // Возможно стоит добавить второй цвет для интерполяции и перегрузить функцию
-void Rasterizer::draw_lineH(vec2 p0, vec2 p1, Pixel color) {
-    if (p0.x > p1.x) {
-        std::swap(p0.x, p1.x);
-        std::swap(p0.y, p1.y);
-    }
-
-    int dx = p1.x - p0.x;
-    int dy = p1.y - p0.y;
-
-    auto dir = (dy < 0) ? -1 : 1;
-    dy *= dir;
-
-    if (dx != 0) {
-        int y = p0.y;
-        int p = 2 * dy - dx;
-        for (int i = 0; i < dx + 1; ++i) {
-            target.set_pixel(p0.x + i, y, 0, color);
-            if (p >= 0) {
-                y += dir;
-                p = p - 2 * dx;
-            }
-            p = p + 2 * dy;
-        }
-    }
-}
-void Rasterizer::draw_lineV(vec2 p0, vec2 p1, Pixel color) {
-    if (p0.y > p1.y) {
-        std::swap(p0.x, p1.x);
-        std::swap(p0.y, p1.y);
-    }
-
-    int dx = p1.x - p0.x;
-    int dy = p1.y - p0.y;
-
-    auto dir = (dx < 0) ? -1 : 1;
-    dx *= dir;
-
-    if (dy != 0) {
-        int x = p0.x;
-        int p = 2 * dx - dy;
-        for (int i = 0; i < dy + 1; ++i) {
-            target.set_pixel(x, p0.y + i, 0, color);
-            if (p >= 0) {
-                x += dir;
-                p = p - 2 * dy;
-            }
-            p = p + 2 * dx;
-        }
-    }
-}
-void Rasterizer::draw_line(vec2 p0, vec2 p1, Pixel color) {
-    if (std::abs(p1.x - p0.x) > std::abs(p1.y - p0.y)) {
-        draw_lineH(p0, p1, color);
-    } else {
-        draw_lineV(p0, p1, color);
-    }
-}
-
-void Rasterizer::draw_lineH(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) {
+void Rasterizer::draw_lineH(Vertex v0, Vertex v1) {
     if (v0.position.x > v1.position.x)
         std::swap(v0, v1);
 
@@ -79,7 +21,7 @@ void Rasterizer::draw_lineH(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) 
     int p = 2 * dy - dx;
 
     for (int i = 0; i <= dx; ++i) {
-        v_stack.push_back({ { (float)((int)v0.position.x + i), (float)y, z, 1.0f }, v0.color });
+        target.set_pixel((int)v0.position.x + i, y, z, v0.color);
 
         if (p >= 0) {
             y += dir;
@@ -89,8 +31,7 @@ void Rasterizer::draw_lineH(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) 
         z += dz;
     }
 }
-
-void Rasterizer::draw_lineV(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) {
+void Rasterizer::draw_lineV(Vertex v0, Vertex v1) {
     if (v0.position.y > v1.position.y)
         std::swap(v0, v1);
 
@@ -107,7 +48,7 @@ void Rasterizer::draw_lineV(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) 
 
     for (int i = 0; i <= dy; ++i) {
         int y = (int)v0.position.y + i;
-        v_stack.push_back({ { (float)x, (float)y, z, 1.0f }, v0.color });
+        target.set_pixel(x, y, z, v0.color);
 
         if (p >= 0) {
             x += dir;
@@ -117,67 +58,76 @@ void Rasterizer::draw_lineV(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) 
         z += dz;
     }
 }
-// Не рисует а лишь добавляет точки в стек для заполнения позже
-void Rasterizer::draw_line(Vertex v0, Vertex v1, std::vector<Vertex>& v_stack) {
+void Rasterizer::draw_line(Vertex v0, Vertex v1) {
     if (std::abs(v1.position.x - v0.position.x) > std::abs(v1.position.y - v0.position.y)) {
-        draw_lineH(v0, v1, v_stack);
+        draw_lineH(v0, v1);
     } else {
-        draw_lineV(v0, v1, v_stack);
+        draw_lineV(v0, v1);
     }
 }
-bool Rasterizer::compare_by_y(const Vertex& a, const Vertex& b) {
-    return a.position.y < b.position.y;
-}
-void Rasterizer::draw_triangle(Vertex v0, Vertex v1, Vertex v2) {
-    this->v.push_back(v0);
-    this->v.push_back(v1);
-    this->v.push_back(v2);
-    std::sort(this->v.begin(), this->v.end(), compare_by_y);
-    this->draw_line(this->v[0], this->v[1], this->v_stack);
-    this->draw_line(this->v[0], this->v[2], this->v_stack);
-    this->draw_line(this->v[1], this->v[2], this->v_stack);
-    std::sort(this->v_stack.begin(), this->v_stack.end(), compare_by_y);
 
-    for (size_t i = 0; i < v_stack.size();) {
-        int curr_y = v_stack[i].position.y;
-        float min_x = v_stack[i].position.x, max_x = v_stack[i].position.x;
-        float min_z = v_stack[i].position.z, max_z = v_stack[i].position.z;
-        // Ищем все пиксели с одинаковой y
-        while (i < v_stack.size() && (int)v_stack[i].position.y == curr_y) {
-            if (v_stack[i].position.x < min_x) {
-                min_x = v_stack[i].position.x;
-                min_z = v_stack[i].position.z;
-            }
-            if (v_stack[i].position.x > max_x) {
-                max_x = v_stack[i].position.x;
-                max_z = v_stack[i].position.z;
-            }
-            i++;
-        }
-        draw_line_simple((int)min_x, min_z, (int)max_x, max_z, curr_y, v0.color);
+void Rasterizer::draw_triangle(Vertex v1, Vertex v2, Vertex v3) {
+    // Сортируем вершины по Y: v1 - верхняя
+    if (v1.position.y > v2.position.y) std::swap(v1, v2);
+    if (v1.position.y > v3.position.y) std::swap(v1, v3);
+    if (v2.position.y > v3.position.y) std::swap(v2, v3);
+
+    float total_height = v3.position.y - v1.position.y;
+    if (total_height <= 0.0f) return; // Защита: треугольник вырожден в горизонтальную линию
+
+    // Рисуем треугольник одним проходом
+    for (int i = 0; i < total_height; i++) {
+        // Определяем, в какой мы половине (верхней или нижней)
+        bool second_half = i > v2.position.y - v1.position.y || v2.position.y == v1.position.y;
+        float segment_height = second_half ? v3.position.y - v2.position.y : v2.position.y - v1.position.y;
+        
+        if (segment_height <= 0.0f) continue; // Защита от деления на 0
+
+        float alpha = (float)i / total_height;
+        // Коэффициент для короткой стороны
+        float beta  = (float)(i - (second_half ? v2.position.y - v1.position.y : 0)) / segment_height;
+
+        // X координаты
+        float x_long = v1.position.x + (v3.position.x - v1.position.x) * alpha;
+        float x_short = second_half ? 
+                        v2.position.x + (v3.position.x - v2.position.x) * beta : 
+                        v1.position.x + (v2.position.x - v1.position.x) * beta;
+
+        // Z координаты
+        float z_long = v1.position.z + (v3.position.z - v1.position.z) * alpha;
+        float z_short = second_half ? 
+                        v2.position.z + (v3.position.z - v2.position.z) * beta : 
+                        v1.position.z + (v2.position.z - v1.position.z) * beta;
+
+        int current_y = v1.position.y + i;
+
+        fill_horizontal_line(current_y, x_long, z_long, x_short, z_short, v1.color);
     }
-    this->v.clear();
-    this->v_stack.clear();
 }
 void Rasterizer::draw_dot(vec2 v, Pixel color) {
     target.set_pixel(v.x, v.y, 0, color);
 }
-void Rasterizer::draw_line_simple(int x1, float z1, int x2, float z2, int y, Pixel color) {
-    if (x1 > x2) {
-        std::swap(x1, x2);
-        std::swap(z1, z2);
-    }
+void Rasterizer::fill_horizontal_line(int y, float x1, float z1, float x2, float z2, Pixel color) {
+    if (x1 > x2) { std::swap(x1, x2); std::swap(z1, z2); }
+    
+    // Клиппинг по Y
+    if (y < 0 || y >= target.height) return;
+    
+    // Клиппинг по X
+    int start_x = std::max(0, (int)x1);
+    int end_x = std::min(target.width - 1, (int)x2);
+    if (start_x > end_x) return;
 
     float z = z1;
     float dz = (x2 != x1) ? (z2 - z1) / (x2 - x1) : 0;
+    
+    if (x1 < 0) z += dz * (0 - x1); 
 
-    for (int x = x1; x <= x2; ++x) {
-        // Тестовое заполнение цвета по глубине
-        uint8_t color_val = 255 - (uint8_t)std::clamp(z, 0.0f, 255.0f);
-        Pixel z_color = { color_val, color_val, color_val };
-
-        target.set_pixel(x, y, z, z_color);
-
+    for (int x = start_x; x <= end_x; ++x) {
+        uint8_t c = 255 - (uint8_t)z; 
+        Pixel depth_color = {c, c, c}; 
+        
+        target.set_pixel(x, y, (int)z, depth_color);
         z += dz;
     }
 }
