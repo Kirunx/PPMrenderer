@@ -4,7 +4,6 @@
 #include <limits>
 #include <math.h>
 #include <vector>
-// Возможно стоит добавить второй цвет для интерполяции и перегрузить функцию
 void Rasterizer::draw_lineH(Vertex v0, Vertex v1) {
     if (v0.position.x > v1.position.x)
         std::swap(v0, v1);

@@ -122,10 +122,10 @@ void Renderer::render_frame(Rasterizer& rasterizer) {
                     tv_buffer[indices[i]],
                     tv_buffer[indices[i + 1]],
                     tv_buffer[indices[i + 2]]);
-                // rasterizer.draw_triangle_outline(
-                //     tv_buffer[indices[i]],
-                //     tv_buffer[indices[i + 1]],
-                //     tv_buffer[indices[i + 2]]);
+                rasterizer.draw_triangle_outline(
+                    tv_buffer[indices[i]],
+                    tv_buffer[indices[i + 1]],
+                    tv_buffer[indices[i + 2]]);
             }
         }
     }
